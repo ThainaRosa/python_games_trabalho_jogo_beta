@@ -1,8 +1,7 @@
 import pygame
 
 class Enemy:
-
-    def __init__(self, x, y):
+    def __init__(self, x, y, ground_offset=50):
 
         self.walk = [
             pygame.image.load("images/enemy/enemy1.png"),
@@ -18,15 +17,19 @@ class Enemy:
         self.frame = 0
 
         self.x = x
-        self.y = y
-        self.speed = 4
+        self.y = y + ground_offset
 
-    def move(self):
+        self.speed = 2
 
-        self.x -= self.speed
+        # vida
+        self.hp = 2
 
-        if self.x < -64:
-            self.x = 800
+    def move(self, player_x):
+
+        if self.x > player_x:
+            self.x -= self.speed
+        else:
+            self.x += self.speed
 
         self.frame += 0.15
 
@@ -36,9 +39,10 @@ class Enemy:
         self.image = self.walk[int(self.frame)]
 
     def draw(self, window):
-
         window.blit(self.image, (self.x, self.y))
 
     def get_rect(self):
-
         return pygame.Rect(self.x, self.y, 64, 64)
+
+    def hit(self):
+        self.hp -= 1
