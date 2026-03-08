@@ -119,3 +119,6 @@ class Player:
     def hit(self):
         self.hurted = True
         self.hurt_timer = self.hurt_duration
+        self.x -= 120  # empurra para trás
+
+

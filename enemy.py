@@ -24,6 +24,10 @@ class Enemy:
         # vida
         self.hp = 2
 
+        # cooldown de dano
+        self.hit_cooldown = 0
+        self.hit_delay = 20
+
     def move(self, player_x):
 
         if self.x > player_x:
@@ -38,11 +42,27 @@ class Enemy:
 
         self.image = self.walk[int(self.frame)]
 
-    def draw(self, window):
-        window.blit(self.image, (self.x, self.y))
+        # reduz cooldown
+        if self.hit_cooldown > 0:
+            self.hit_cooldown -= 1
+
+    def draw(self, window, camera_x):
+
+        # efeito piscando ao levar dano
+        if self.hit_cooldown % 4 < 2:
+            window.blit(self.image, (self.x - camera_x, self.y))
 
     def get_rect(self):
         return pygame.Rect(self.x, self.y, 64, 64)
 
-    def hit(self):
-        self.hp -= 1
+    def hit(self, player_x):
+
+        if self.hit_cooldown == 0:
+            self.hp -= 1
+            self.hit_cooldown = self.hit_delay
+
+            # KNOCKBACK
+            if self.x > player_x:
+                self.x += 115
+            else:
+                self.x -= 115
