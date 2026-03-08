@@ -1,10 +1,12 @@
 import pygame
 
+import menu
 from settings import *
 from player import Player
 from enemy import Enemy
 from coin import Coin
 from menu import draw_menu
+from menu import draw_menu, menu_options
 
 pygame.init()
 
@@ -66,8 +68,22 @@ while running:
         if game_state == "menu":
 
             if event.type == pygame.KEYDOWN:
+
+                if event.key == pygame.K_UP:
+                    menu.selected -= 1
+
+                if event.key == pygame.K_DOWN:
+                    menu.selected += 1
+
+                menu.selected %= len(menu_options)
+
                 if event.key == pygame.K_RETURN:
-                    game_state = "game"
+
+                    if menu_options[menu.selected] == "START GAME":
+                        game_state = "game"
+
+                    if menu_options[menu.selected] == "EXIT":
+                        running = False
 
     keys = pygame.key.get_pressed()
 
