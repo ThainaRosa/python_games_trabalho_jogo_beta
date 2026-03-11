@@ -2,8 +2,8 @@ import pygame
 
 class Player:
     def __init__(self, x, y, ground_offset=65):
-        # Função auxiliar para carregar sprites
-        def load_sprite(path, size=(64,64), colorkey=None):
+
+        def load_sprite(path, size=(84,84), colorkey=None):
             img = pygame.image.load(path)
             if colorkey is not None:
                 img = img.convert()
@@ -40,26 +40,33 @@ class Player:
         # Dano
         self.hurted = False
         self.hurt_timer = 0
-        self.hurt_duration = 15  # frames que a imagem de dano aparece
+        self.hurt_duration = 15
 
         # Posição
         self.x = x
         self.y = y + ground_offset
 
-        # Velocidade e pulo
+        # Direção
+        self.direction = 1  # 1 = direita, -1 = esquerda
+
+        # Movimento
         self.vel = 5
         self.jump = False
         self.jump_count = 10
 
+
     def move(self, keys):
+
         moving = False
 
         if keys[pygame.K_LEFT]:
             self.x -= self.vel
+            self.direction = -1
             moving = True
 
         if keys[pygame.K_RIGHT]:
             self.x += self.vel
+            self.direction = 1
             moving = True
 
         # Iniciar ataque
@@ -69,17 +76,24 @@ class Player:
 
         # Animação ataque
         if self.attacking:
+
             self.attack_frame += 0.3
+
             if self.attack_frame >= len(self.attack):
                 self.attack_frame = 0
                 self.attacking = False
                 self.attack_cooldown = 20
+
             self.image = self.attack[int(self.attack_frame)]
+
         else:
+
             if moving:
                 self.frame += 0.2
+
                 if self.frame >= len(self.run):
                     self.frame = 0
+
                 self.image = self.run[int(self.frame)]
 
         # Cooldown ataque
@@ -88,37 +102,62 @@ class Player:
 
         # Pulo
         if not self.jump:
+
             if keys[pygame.K_SPACE]:
                 self.jump = True
+
         else:
+
             if self.jump_count >= -10:
                 self.y -= (self.jump_count * abs(self.jump_count)) * 0.5
                 self.jump_count -= 1
+
             else:
                 self.jump = False
                 self.jump_count = 10
 
         # Atualiza dano
         if self.hurted:
+
             self.hurt_timer -= 1
+
             if self.hurt_timer <= 0:
                 self.hurted = False
 
+
     def draw(self, window, camera_x):
+
         if self.hurted:
-            window.blit(self.hurt_img, (self.x - camera_x, self.y))
+            img = self.hurt_img
         else:
-            window.blit(self.image, (self.x - camera_x, self.y))
+            img = self.image
+
+        # espelha sprite se estiver olhando para esquerda
+        if self.direction == -1:
+            img = pygame.transform.flip(img, True, False)
+
+        window.blit(img, (self.x - camera_x, self.y))
+
 
     def get_rect(self):
         return pygame.Rect(self.x, self.y, 64, 64)
 
+
     def get_attack_rect(self):
-        return pygame.Rect(self.x + 50, self.y + 10, 40, 40)
+
+        if self.direction == 1:
+            return pygame.Rect(self.x + 50, self.y + 10, 40, 40)
+        else:
+            return pygame.Rect(self.x - 40, self.y + 10, 40, 40)
+
 
     def hit(self):
+
         self.hurted = True
         self.hurt_timer = self.hurt_duration
-        self.x -= 120  # empurra para trás
 
+        if self.direction == 1:
+            self.x -= 120
+        else:
+            self.x += 120
 
