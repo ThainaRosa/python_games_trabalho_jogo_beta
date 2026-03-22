@@ -10,7 +10,7 @@ class Enemy:
         ]
 
         for i in range(len(self.walk)):
-            self.walk[i] = pygame.transform.scale(self.walk[i], (64, 64))
+            self.walk[i] = pygame.transform.scale(self.walk[i], (80, 80))
 
         self.image = self.walk[0]
 

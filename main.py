@@ -78,7 +78,7 @@ fireballs = []
 fireball_cooldown = 0
 
 spawn_timer = 0
-spawn_delay = 500
+spawn_delay = 180
 
 score = 0
 
